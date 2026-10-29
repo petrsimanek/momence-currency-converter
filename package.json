@@ -1,7 +1,7 @@
 {
   "name": "momence-currency-converter",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "engines": {
     "node": ">=22.12"
@@ -9,8 +9,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "oxlint",
     "preview": "vite preview",
+    "lint": "oxlint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc -b",
