@@ -3,11 +3,18 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ThemeProvider } from 'styled-components'
 
+import { ExchangeRatesParseError } from './api/cnb/parseExchangeRates'
 import App from './App'
 import { GlobalStyle } from './styles/GlobalStyle'
 import { theme } from './styles/theme'
 
-const queryClient = new QueryClient()
+const MAX_RETRIES = 1
+
+function shouldRetry(failureCount: number, error: Error) {
+  return !(error instanceof ExchangeRatesParseError) && failureCount < MAX_RETRIES
+}
+
+const queryClient = new QueryClient({ defaultOptions: { queries: { retry: shouldRetry } } })
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

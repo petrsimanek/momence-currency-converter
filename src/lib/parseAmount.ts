@@ -9,7 +9,7 @@ export type AmountParseResult = EmptyAmount | InvalidAmount | ValidAmount
 export const MAX_AMOUNT = 1_000_000_000_000
 
 const WHITESPACE_PATTERN = /\s/g
-const AMOUNT_PATTERN = /^\d+(\.\d*)?$/
+const AMOUNT_PATTERN = /^(\d+(\.\d*)?|\.\d+)$/
 
 const amountSchema = z
   .string()

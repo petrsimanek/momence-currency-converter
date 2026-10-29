@@ -11,6 +11,7 @@ describe('parseAmount', () => {
     ['100', 100],
     ['1.5', 1.5],
     ['12.', 12],
+    ['.5', 0.5],
     ['1 000', 1000],
     ['1\u00A0000', 1000],
     ['1\u202F000', 1000],
@@ -26,7 +27,7 @@ describe('parseAmount', () => {
     })
   })
 
-  it.each(['-5', 'abc', '1.2.3', '1e5', '.5'])('rejects %j', (input) => {
+  it.each(['-5', 'abc', '1.2.3', '1e5', '.'])('rejects %j', (input) => {
     expect(parseAmount(input)).toEqual({
       status: 'invalid',
       message: 'Enter a valid non-negative number',
