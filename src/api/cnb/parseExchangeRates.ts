@@ -1,11 +1,10 @@
+import type { z } from 'zod'
+
+import { exchangeRateSchema, titleSchema } from './schemas'
 import type { ExchangeRate, ExchangeRates } from './types'
 
-const TITLE_PATTERN = /^(\d{1,2} [A-Za-z]{3} \d{4}) #(\d+)$/
 const COLUMNS_LINE = 'Country|Currency|Amount|Code|Rate'
 const COLUMN_COUNT = 5
-const AMOUNT_PATTERN = /^\d+$/
-const RATE_PATTERN = /^\d+(\.\d+)?$/
-const CODE_PATTERN = /^[A-Z]{3}$/
 
 export class ExchangeRatesParseError extends Error {
   constructor(lineNumber: number, reason: string) {
@@ -14,35 +13,24 @@ export class ExchangeRatesParseError extends Error {
   }
 }
 
-function parseTitle(line: string, lineNumber: number) {
-  const match = TITLE_PATTERN.exec(line)
+function toParseError(error: z.ZodError, lineNumber: number) {
+  return new ExchangeRatesParseError(lineNumber, error.issues[0].message)
+}
 
-  if (!match) {
-    throw new ExchangeRatesParseError(lineNumber, 'invalid date and sequence')
+function parseTitle(line: string, lineNumber: number) {
+  const result = titleSchema.safeParse(line)
+
+  if (!result.success) {
+    throw toParseError(result.error, lineNumber)
   }
 
-  return { date: match[1], sequence: Number(match[2]) }
+  return result.data
 }
 
 function assertColumns(line: string, lineNumber: number) {
   if (line !== COLUMNS_LINE) {
     throw new ExchangeRatesParseError(lineNumber, 'unexpected column names')
   }
-}
-
-function parsePositiveNumber(
-  value: string,
-  pattern: RegExp,
-  fieldName: string,
-  lineNumber: number,
-) {
-  const parsed = Number(value)
-
-  if (!pattern.test(value) || !Number.isFinite(parsed) || parsed <= 0) {
-    throw new ExchangeRatesParseError(lineNumber, `${fieldName} must be a positive number`)
-  }
-
-  return parsed
 }
 
 function parseRow(line: string, lineNumber: number): ExchangeRate {
@@ -56,22 +44,13 @@ function parseRow(line: string, lineNumber: number): ExchangeRate {
   }
 
   const [country, currency, amount, code, rate] = fields
+  const result = exchangeRateSchema.safeParse({ country, currency, amount, code, rate })
 
-  if (country === '' || currency === '') {
-    throw new ExchangeRatesParseError(lineNumber, 'empty country or currency')
+  if (!result.success) {
+    throw toParseError(result.error, lineNumber)
   }
 
-  if (!CODE_PATTERN.test(code)) {
-    throw new ExchangeRatesParseError(lineNumber, 'invalid currency code')
-  }
-
-  return {
-    country,
-    currency,
-    amount: parsePositiveNumber(amount, AMOUNT_PATTERN, 'amount', lineNumber),
-    code,
-    rate: parsePositiveNumber(rate, RATE_PATTERN, 'rate', lineNumber),
-  }
+  return result.data
 }
 
 export function parseExchangeRates(text: string): ExchangeRates {

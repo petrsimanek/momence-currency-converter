@@ -1,10 +1,8 @@
-export type ExchangeRate = {
-  country: string
-  currency: string
-  amount: number
-  code: string
-  rate: number
-}
+import type { z } from 'zod'
+
+import type { exchangeRateSchema } from './schemas'
+
+export type ExchangeRate = z.infer<typeof exchangeRateSchema>
 
 export type ExchangeRates = {
   date: string
