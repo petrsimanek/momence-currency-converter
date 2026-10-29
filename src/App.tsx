@@ -109,17 +109,13 @@ function ExchangeRatesContent() {
     return (
       <>
         <Subtitle>{`Rates valid for ${data.date} (#${data.sequence})`}</Subtitle>
-
         <ConverterForm
           ref={converterRef}
           rates={data.rates}
           code={code}
           onCodeChange={handleCodeChange}
         />
-
-        {/* Announces the currency change made from the table, which is otherwise silent. */}
         <VisuallyHidden role="status">{announcement}</VisuallyHidden>
-
         <RatesTable rates={data.rates} selectedCode={code} onSelect={handleSelect} />
       </>
     )
@@ -139,7 +135,6 @@ function ExchangeRatesContent() {
         <ErrorIcon />
         Could not load exchange rates.
       </ErrorText>
-
       <RetryButton type="button" onClick={() => refetch()}>
         Try again
       </RetryButton>
@@ -151,7 +146,6 @@ function App() {
   return (
     <Page>
       <Title>CNB exchange rates</Title>
-
       <ExchangeRatesContent />
     </Page>
   )
