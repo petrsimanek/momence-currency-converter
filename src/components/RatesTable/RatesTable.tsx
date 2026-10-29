@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components'
 
 import type { ExchangeRate } from '../../api/cnb/types'
+import { CurrencyFlag } from '../CurrencyFlag/CurrencyFlag'
 import { visuallyHidden } from '../../styles/visuallyHidden'
 
 type RatesTableProps = {
@@ -105,7 +106,7 @@ const Row = styled.tr<{ $selected: boolean }>`
   ${({ $selected, theme }) =>
     mobileOnly(css`
       display: grid;
-      grid-template-columns: 3.5rem 1fr auto;
+      grid-template-columns: 5rem 1fr auto;
       grid-template-areas:
         'code currency rate'
         'code country amount';
@@ -134,7 +135,9 @@ const Row = styled.tr<{ $selected: boolean }>`
 `
 
 const CodeButton = styled.button`
-  display: block;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
   width: 100%;
   min-height: 2.75rem;
   margin: -0.625rem 0;
@@ -254,6 +257,8 @@ export function RatesTable({ rates, selectedCode, onSelect }: RatesTableProps) {
                   aria-label={`Use ${code} – ${currency} in the converter`}
                   aria-current={code === selectedCode || undefined}
                 >
+                  <CurrencyFlag code={code} />
+
                   {code}
                 </CodeButton>
               </Cell>
